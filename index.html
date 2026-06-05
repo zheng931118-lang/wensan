@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文山之美 - 台北綠洲・靜謐茶鄉與秘境探險</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons for graphics & maps -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        forest: {
+                            50: '#f2f8f5',
+                            100: '#e2f0e8',
+                            600: '#15803d',
+                            700: '#166534',
+                            800: '#14532d',
+                            900: '#064e3b', // Primary Wenshan Tea Green
+                        },
+                        tea: {
+                            500: '#b8924a',
+                            600: '#a37f3a',
+                            700: '#8c6b2e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-nav {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .hero-bg {
+            background-image: linear-gradient(rgba(6, 78, 59, 0.75), rgba(6, 78, 59, 0.9)), url('https://images.unsplash.com/photo-1596436889106-be35e843f974?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        /* Custom scrollbar for beautiful detailed modal content */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #b8924a;
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a37f3a;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Global Custom Alert Container (Avoids browser alert()) -->
+    <div id="custom-toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-forest-900 border-l-4 border-tea-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center space-x-3">
+            <span id="toast-icon" class="text-tea-500"><i class="fas fa-check-circle text-xl"></i></span>
+            <span id="toast-message" class="font-medium"></span>
+        </div>
+    </div>
+
+    <!-- Detailed Immersive Lightbox Modal -->
+    <div id="detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-white rounded-3xl overflow-hidden shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col transform scale-95 transition-all duration-300 relative border border-stone-100" id="modal-container">
+            <!-- Modal Header Hero with Image -->
+            <div class="relative h-64 sm:h-80 bg-stone-100 flex-shrink-0">
+                <img id="modal-img" class="w-full h-full object-cover" src="" alt="">
+                <div class="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/30 to-transparent"></div>
+                <!-- Close Button -->
+                <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center backdrop-blur-md transition-all focus:outline-none" aria-label="關閉視窗">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+                <!-- Spot Badges & Title in Hero -->
+                <div class="absolute bottom-6 left-6 right-6 text-white">
+                    <span id="modal-tag" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-tea-500/90 text-white border border-tea-500/30 backdrop-blur-sm mb-3"></span>
+                    <h3 id="modal-title" class="text-2xl sm:text-4xl font-black tracking-tight leading-tight"></h3>
+                </div>
+            </div>
+
+            <!-- Modal Content - Scrollable -->
+            <div class="p-6 sm:p-8 overflow-y-auto custom-scroll flex-1 space-y-6 text-stone-600">
+                <!-- Rich Descriptive Story -->
+                <div>
+                    <h4 class="text-stone-900 font-bold text-lg border-b border-stone-100 pb-2 mb-3 flex items-center">
+                        <i class="fas fa-quote-left text-tea-500 mr-2"></i> 秘境深度背景故事
+                    </h4>
+                    <div id="modal-story" class="text-sm sm:text-base leading-relaxed space-y-4 text-stone-700">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Insider Travel Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Left: Hack & Best hours -->
+                    <div class="space-y-4">
+                        <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100/60">
+                            <h5 class="text-forest-900 font-bold text-sm flex items-center mb-1.5">
+                                <i class="fas fa-lightbulb text-amber-500 mr-2"></i> 內行小撇步 (Insider Hack)
+                            </h5>
+                            <p id="modal-hack" class="text-xs text-stone-600 leading-relaxed"></p>
+                        </div>
+                        <div class="bg-stone-50 p-4 rounded-2xl border border-stone-150">
+                            <h5 class="text-stone-900 font-bold text-sm flex items-center mb-1.5">
+                                <i class="fas fa-clock text-tea-600 mr-2"></i> 最佳造訪時間 (Best Hours)
+                            </h5>
+                            <p id="modal-hours" class="text-xs text-stone-600 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Transport & Signature item -->
+                    <div class="space-y-4">
+                        <div class="bg-stone-50 p-4 rounded-2xl border border-stone-150">
+                            <h5 class="text-stone-900 font-bold text-sm flex items-center mb-1.5">
+                                <i class="fas fa-bus-alt text-tea-600 mr-2"></i> 交通指引 (How to Get There)
+                            </h5>
+                            <p id="modal-transport" class="text-xs text-stone-600 leading-relaxed"></p>
+                        </div>
+                        <div class="bg-amber-50/30 p-4 rounded-2xl border border-amber-100/60">
+                            <h5 class="text-tea-700 font-bold text-sm flex items-center mb-1.5">
+                                <i class="fas fa-star text-tea-500 mr-2"></i> 招牌品項 / 核心看點
+                            </h5>
+                            <p id="modal-highlight" class="text-xs text-stone-600 leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer - Actions -->
+            <div class="bg-stone-50 p-6 border-t border-stone-200 flex flex-col sm:flex-row justify-between items-center gap-4 flex-shrink-0">
+                <div class="text-xs text-stone-500">
+                    <i class="fas fa-map-marker-alt text-tea-500 mr-1"></i> <span id="modal-location"></span>
+                </div>
+                <button id="modal-action-btn" class="w-full sm:w-auto py-3 px-6 rounded-xl text-sm font-bold shadow-md transition-all flex items-center justify-center space-x-2">
+                    <!-- Configured dynamically -->
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="glass-nav fixed top-0 left-0 right-0 z-40 border-b border-stone-200 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <div class="bg-forest-900 text-white p-2.5 rounded-xl shadow-lg shadow-forest-900/20">
+                        <i class="fas fa-mountain-sun text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold tracking-wider text-forest-900 block leading-tight">文山之美</span>
+                        <span class="text-xs text-tea-600 font-medium tracking-widest block uppercase">Wenshan Oasis</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#about" class="text-stone-600 hover:text-forest-900 font-medium transition-colors">認識文山</a>
+                    <a href="#explore" class="text-stone-600 hover:text-forest-900 font-medium transition-colors">秘境探索</a>
+                    <a href="#itinerary" class="text-stone-600 hover:text-forest-900 font-medium transition-colors">行程規劃</a>
+                    <a href="#quiz" class="text-stone-600 hover:text-forest-900 font-medium transition-colors">挑戰問答</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-forest-900 p-2 focus:outline-none" aria-label="Toggle Menu">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-stone-200 px-4 pt-2 pb-6 space-y-3 shadow-xl">
+            <a href="#about" class="block px-4 py-2 text-stone-600 hover:bg-stone-100 rounded-lg font-medium transition-all">認識文山</a>
+            <a href="#explore" class="block px-4 py-2 text-stone-600 hover:bg-stone-100 rounded-lg font-medium transition-all">秘境探索</a>
+            <a href="#itinerary" class="block px-4 py-2 text-stone-600 hover:bg-stone-100 rounded-lg font-medium transition-all">行程規劃</a>
+            <a href="#quiz" class="block px-4 py-2 text-stone-600 hover:bg-stone-100 rounded-lg font-medium transition-all">挑戰問答</a>
+        </div>
+    </nav>
+
+    <!-- Hero Banner Area -->
+    <header class="hero-bg min-h-screen flex items-center pt-20 text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(184,146,74,0.15),transparent_45%)]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10 w-full">
+            <div class="max-w-3xl">
+                <!-- Tag -->
+                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-tea-500/20 text-tea-500 border border-tea-500/30 uppercase tracking-widest mb-6">
+                    <i class="fas fa-seedling mr-1.5"></i> 台北南端的最美綠洲
+                </span>
+                
+                <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-tight mb-6">
+                    遠離塵囂的靜謐山林，<br>
+                    遇見不為人知的 <span class="text-transparent bg-clip-text bg-gradient-to-r from-tea-500 via-amber-400 to-emerald-400 font-serif italic">文山風采</span>
+                </h1>
+                
+                <p class="text-lg sm:text-xl text-stone-200 font-light leading-relaxed mb-10 max-w-2xl">
+                    舊稱「拳山」的文山區，猶如大自然的隱形口袋。這裡不僅有享譽國際的貓空茶園與指南宮，更藏著幽靜的文學步道、眺望盆地的落日秘境，以及在地老饕才懂的頂級無菜單庭園料理。
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#explore" class="px-8 py-4 rounded-xl bg-gradient-to-r from-tea-600 to-tea-500 text-white font-semibold text-center hover:shadow-lg hover:shadow-tea-600/30 hover:-translate-y-0.5 transition-all flex items-center justify-center space-x-2">
+                        <span>開啟秘境地圖</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#quiz" class="px-8 py-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-center backdrop-blur-sm transition-all flex items-center justify-center space-x-2">
+                        <span>我是文山達人嗎？</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative Curve Divider -->
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg class="w-full h-16 text-stone-50 fill-current" viewBox="0 0 1440 64" preserveAspectRatio="none">
+                <path d="M0,32L120,42.7C240,53,480,75,720,74.7C960,75,1200,53,1320,42.7L1440,32L1440,64L1320,64C1200,64,960,64,720,64C480,64,240,64,120,64L0,64Z"></path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-stone-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <!-- Imagery / Storyboard -->
+                <div class="relative">
+                    <div class="absolute -top-6 -left-6 w-32 h-32 bg-tea-500/10 rounded-3xl -z-10"></div>
+                    <div class="absolute -bottom-6 -right-6 w-48 h-48 bg-forest-900/5 rounded-full -z-10"></div>
+                    
+                    <div class="rounded-2xl overflow-hidden shadow-2xl border border-stone-200">
+                        <div class="bg-forest-900 p-8 text-white relative">
+                            <span class="text-6xl font-serif text-tea-500/20 absolute right-6 top-6 select-none">“</span>
+                            <h3 class="text-2xl font-bold mb-4 font-serif italic text-tea-500">穿過隧道，便是世外桃源</h3>
+                            <p class="text-stone-200 leading-relaxed text-sm mb-6">
+                                文山區一半以上皆為丘陵地，宛如台北盆地的綠色天然屏障。早期前來文山，常需跨越隧道或溪流，這種與市區隔開的獨特地理特性，讓文山保有安詳的慢活步調。不管是微風徐徐的景美溪畔、歷史悠久的四十載聞山咖啡，或是山林環抱的古道，都在等待你的駐足。
+                            </p>
+                            <div class="flex items-center space-x-4 border-t border-white/10 pt-4">
+                                <div class="flex items-center space-x-1.5 text-xs text-stone-300">
+                                    <i class="fas fa-campground text-tea-500"></i>
+                                    <span>自然淺山</span>
+                                </div>
+                                <div class="flex items-center space-x-1.5 text-xs text-stone-300">
+                                    <i class="fas fa-mug-hot text-tea-500"></i>
+                                    <span>百年茶文化</span>
+                                </div>
+                                <div class="flex items-center space-x-1.5 text-xs text-stone-300">
+                                    <i class="fas fa-heart text-tea-500"></i>
+                                    <span>靜謐社區</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Stats Overlays -->
+                    <div class="absolute -bottom-10 left-6 bg-white p-6 rounded-xl shadow-xl border border-stone-100 flex items-center space-x-4">
+                        <div class="text-center">
+                            <span class="block text-3xl font-black text-forest-900">4+</span>
+                            <span class="text-xs text-stone-500 font-medium">療癒級親山步道</span>
+                        </div>
+                        <div class="h-8 w-px bg-stone-200"></div>
+                        <div class="text-center">
+                            <span class="block text-3xl font-black text-forest-900">100%</span>
+                            <span class="text-xs text-stone-500 font-medium">遠離喧囂芬多精</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Introduction -->
+                <div class="space-y-6">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-forest-900 tracking-tight">
+                        生活在城市，<br><span class="text-tea-500 font-serif">靈魂呼吸在文山</span>
+                    </h2>
+                    <p class="text-stone-600 leading-relaxed">
+                        您聽說過呂洞賓在台北留下的巨大腳印嗎？您知道在木柵與新店交界的深山裡，隱藏著結合茶道藝術與精緻日式庭園的極致無菜單餐廳嗎？
+                    </p>
+                    <p class="text-stone-600 leading-relaxed">
+                        這裡不僅是台北市民週末郊遊的「後花園」，更是蘊藏深厚茶葉與鐵道歷史的文化寶地。無論是想要獨自流汗挑戰、與愛人來場安靜的庭園饗宴，抑或是到充滿文青氣息的老字號咖啡廳看書消磨午後，本網站為您整理了最詳細、不隨便公開的文山深度路線。
+                    </p>
+                    <div class="pt-4">
+                        <a href="#explore" class="inline-flex items-center space-x-2 text-forest-900 font-bold hover:text-tea-600 transition-colors group">
+                            <span>探索文山各大景點與美食</span>
+                            <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Explore & Filter Section -->
+    <section id="explore" class="py-24 bg-white border-y border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-tea-600 font-bold tracking-widest text-xs uppercase block mb-3">Secret Map</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-forest-900 mb-4">文山秘境全攻略</h2>
+                <p class="text-stone-500">使用分類標籤篩選您心儀的探索主題。您可以隨時點擊卡片下方的「加入我的行程」，打造您的一日文山之旅！</p>
+            </div>
+
+            <!-- Filter Categories -->
+            <div class="flex flex-wrap justify-center gap-3 mb-12">
+                <button onclick="filterExplore('all')" id="btn-all" class="filter-btn px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 bg-forest-900 text-white shadow-md shadow-forest-900/10">
+                    <i class="fas fa-border-all mr-1.5"></i>全部探索
+                </button>
+                <button onclick="filterExplore('hiking')" id="btn-hiking" class="filter-btn px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 bg-stone-100 text-stone-600 hover:bg-stone-200">
+                    <i class="fas fa-hiking mr-1.5"></i>爬山健行
+                </button>
+                <button onclick="filterExplore('food')" id="btn-food" class="filter-btn px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 bg-stone-100 text-stone-600 hover:bg-stone-200">
+                    <i class="fas fa-utensils mr-1.5"></i>不為人知美食
+                </button>
+                <button onclick="filterExplore('scenic')" id="btn-scenic" class="filter-btn px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 bg-stone-100 text-stone-600 hover:bg-stone-200">
+                    <i class="fas fa-camera-retro mr-1.5"></i>文青與拍照
+                </button>
+            </div>
+
+            <!-- Cards Grid -->
+            <div id="explore-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Cards will be rendered dynamically by JavaScript for robust interactive maintenance -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Custom Itinerary Planner Section -->
+    <section id="itinerary" class="py-24 bg-stone-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+                <!-- Side Panel: Introduction and Quick Templates -->
+                <div class="lg:col-span-5 space-y-8">
+                    <div>
+                        <span class="text-tea-600 font-bold tracking-widest text-xs uppercase block mb-3">Planner</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-forest-900 mb-4">文山專屬行程規劃</h2>
+                        <p class="text-stone-600 leading-relaxed">
+                            沒時間自己挑選？我們為您準備了最道地的文山一日遊範本。點擊快速載入範本，或者點選上方秘境卡片，自由添加屬於您的自訂路線！
+                        </p>
+                    </div>
+
+                    <!-- Recommended Presets -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-bold text-stone-800 flex items-center space-x-2">
+                            <i class="fas fa-compass text-tea-500"></i>
+                            <span>經典一日遊推薦路線</span>
+                        </h3>
+                        
+                        <!-- Template 1 -->
+                        <div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 hover:border-tea-500 hover:shadow-md transition-all cursor-pointer group" onclick="loadPreset('tea')">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-forest-900 group-hover:text-tea-600 transition-colors">一日茶香與避暑芬多精之旅</h4>
+                                <span class="bg-emerald-50 text-emerald-700 text-xs px-2.5 py-1 rounded font-medium">踏青首選</span>
+                            </div>
+                            <p class="text-xs text-stone-500 mb-3">樟樹樟湖步道 ➔ 貓空茶餐與鐵觀音霜淇淋 ➔ 馥森梧桐墅</p>
+                            <span class="text-xs text-tea-600 font-semibold group-hover:underline flex items-center">
+                                載入此行程範本 <i class="fas fa-chevron-right ml-1"></i>
+                            </span>
+                        </div>
+
+                        <!-- Template 2 -->
+                        <div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 hover:border-tea-500 hover:shadow-md transition-all cursor-pointer group" onclick="loadPreset('history')">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-forest-900 group-hover:text-tea-600 transition-colors">文青慢活與夕陽小鎮巡禮</h4>
+                                <span class="bg-amber-50 text-amber-700 text-xs px-2.5 py-1 rounded font-medium">人文知性</span>
+                            </div>
+                            <p class="text-xs text-stone-500 mb-3">仙跡岩看落日 ➔ 聞山咖啡景美店 ➔ 景美夜市鵝媽媽與雙管四神湯</p>
+                            <span class="text-xs text-tea-600 font-semibold group-hover:underline flex items-center">
+                                載入此行程範本 <i class="fas fa-chevron-right ml-1"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Panel: Interactive Builder -->
+                <div class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-stone-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-stone-100 pb-6 mb-6 gap-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-forest-900 flex items-center space-x-2">
+                                <i class="fas fa-calendar-alt text-tea-500"></i>
+                                <span>我的自訂文山行程表</span>
+                            </h3>
+                            <p class="text-xs text-stone-400 mt-1">您可以自由拖曳安排順序，也可以移除行程</p>
+                        </div>
+                        <button onclick="clearItinerary()" class="text-xs text-red-500 hover:text-red-700 font-semibold flex items-center space-x-1">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>清空全部</span>
+                        </button>
+                    </div>
+
+                    <!-- Selected Items Container -->
+                    <div id="itinerary-list" class="space-y-4 min-h-[160px] flex flex-col justify-center border-2 border-dashed border-stone-200 rounded-xl p-4 bg-stone-50/50">
+                        <!-- Placed dynamically or displays placeholder if empty -->
+                        <div id="itinerary-placeholder" class="text-center py-8">
+                            <div class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-folder-open text-stone-300 text-2xl"></i>
+                            </div>
+                            <p class="text-stone-500 font-medium text-sm">您的行程表還是空的</p>
+                            <p class="text-stone-400 text-xs mt-1">快去上方點擊「加入我的行程」吧！</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Zone -->
+                    <div class="mt-8 border-t border-stone-100 pt-6 flex flex-col sm:flex-row gap-4">
+                        <button onclick="copyItinerary()" class="flex-1 py-3.5 px-6 rounded-xl bg-forest-900 text-white font-semibold hover:bg-forest-800 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-forest-900/10">
+                            <i class="fas fa-copy"></i>
+                            <span>複製行程文字</span>
+                        </button>
+                        <button onclick="shareItinerary()" class="py-3.5 px-6 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold transition-all flex items-center justify-center space-x-2">
+                            <i class="fas fa-share-alt"></i>
+                            <span>分享行程</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Game Section -->
+    <section id="quiz" class="py-24 bg-forest-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(184,146,74,0.1),transparent_50%)]"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <span class="text-tea-500 font-bold tracking-widest text-xs uppercase block mb-3">Wenshan Trivia</span>
+                <h2 class="text-3xl sm:text-4xl font-black mb-4">挑戰文山小達人！</h2>
+                <p class="text-stone-300 max-w-lg mx-auto">測試您對文山區的冷知識與景點故事了解多少，挑戰滿分拿到達人稱號！</p>
+            </div>
+
+            <!-- Quiz Card -->
+            <div class="bg-white/5 backdrop-blur-md border border-white/10 p-6 sm:p-10 rounded-2xl shadow-2xl relative">
+                <!-- Question State -->
+                <div id="quiz-game-box">
+                    <div class="flex justify-between items-center mb-6">
+                        <span id="quiz-progress" class="text-xs font-semibold tracking-wider text-tea-500 uppercase">第 1 / 4 題</span>
+                        <span id="quiz-score" class="text-xs font-medium text-stone-300">得分：0</span>
+                    </div>
+
+                    <h3 id="quiz-question" class="text-xl sm:text-2xl font-bold mb-8 leading-snug">
+                        <!-- Loaded dynamically -->
+                    </h3>
+
+                    <!-- Options Grid -->
+                    <div id="quiz-options" class="grid grid-cols-1 gap-4">
+                        <!-- Loaded dynamically -->
+                    </div>
+
+                    <!-- Next Button -->
+                    <div class="mt-8 flex justify-end">
+                        <button id="quiz-next-btn" onclick="nextQuestion()" class="hidden px-6 py-3 rounded-lg bg-tea-500 hover:bg-tea-600 font-bold text-white transition-all flex items-center space-x-2">
+                            <span>下一題</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Result State (Initially Hidden) -->
+                <div id="quiz-result-box" class="hidden text-center py-8">
+                    <div id="quiz-result-icon" class="text-6xl text-tea-500 mb-6">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <h3 id="quiz-result-title" class="text-2xl sm:text-3xl font-black mb-3">挑戰完成！</h3>
+                    <p id="quiz-result-desc" class="text-stone-300 max-w-md mx-auto mb-8">
+                        恭喜！您在 4 題中答對了 3 題。對文山區已經有相當深厚的認識囉！
+                    </p>
+                    <button onclick="restartQuiz()" class="px-8 py-3.5 rounded-xl bg-tea-500 hover:bg-tea-600 font-bold text-white transition-all inline-flex items-center space-x-2">
+                        <i class="fas fa-rotate-left"></i>
+                        <span>重新挑戰</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simple, Elegant Footer -->
+    <footer class="bg-stone-900 text-stone-400 py-12 border-t border-stone-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
+                <!-- Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-forest-800 text-white p-2 rounded-lg">
+                        <i class="fas fa-mountain-sun"></i>
+                    </div>
+                    <span class="text-white font-bold tracking-wider">文山之美導覽網</span>
+                </div>
+                
+                <!-- Links -->
+                <div class="flex flex-wrap justify-center gap-6 text-sm">
+                    <a href="#about" class="hover:text-white transition-colors">認識文山</a>
+                    <a href="#explore" class="hover:text-white transition-colors">秘境探索</a>
+                    <a href="#itinerary" class="hover:text-white transition-colors">自訂行程</a>
+                    <a href="#quiz" class="hover:text-white transition-colors">趣味問答</a>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-stone-800 text-xs text-stone-500 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p>&copy; 2026 文山之美 Wenshan Oasis Explorer. 採用 MIT 授權條款開放下載部屬。</p>
+                <p>適合打包上傳至 GitHub Pages，享受百分之百開源自由。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App Logic Execution -->
+    <script>
+        // ----------------- Data Setup -----------------
+        const exploreData = [
+            {
+                id: 'xianjiyan',
+                title: '仙跡岩親山步道',
+                category: 'hiking',
+                tag: '爬山健行',
+                desc: '海拔142.6公尺的小山丘，因呂洞賓在此留下巨大腳印的神話傳說而得名。山頂「仙岩廟」前的觀景平台視野極佳，能俯瞰整個台北盆地與絢爛落日，老少咸宜。',
+                location: '台北市文山區景興路登山口 (靠近景美夜市)',
+                difficulty: '輕鬆 (約 30 分鐘登頂)',
+                icon: 'fa-hiking',
+                badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop',
+                // Extra Rich Content for Lightbox Modal
+                story: `
+                    <p>仙跡岩古稱「溪子口山」，是景美地區最著名的天然地標與居民運動的核心後山。這裡雖然海拔不高，卻擁有繁茂的熱帶及副熱帶植物生態。漫步其間，不時能聽見台灣藍鵲與五色鳥的清脆啼鳴。</p>
+                    <p>關於頂峰奇石上的巨型腳印，古老神話相傳：八仙之一的呂洞賓追求何仙姑未果，憤而被一腳踢下凡間，降落時右腳用力踩踏在此，因而留下深邃足印。另一說則是他在降妖伏魔時踩下。不論傳說真偽，這裡的仙岩廟早已是香火鼎盛、凝聚在地信仰的重地。</p>
+                    <p>當夜幕低垂，山頂平台的視野豁然開朗。從這裡俯瞰，繁華大台北盆地的萬家燈火與聳立的台北101盡收眼底，被無數攝影愛好者列為台北市最平易近人的落日與夕陽夜景秘境。</p>
+                `,
+                hack: "避開人潮眾多的主線，建議從景興路243巷的牌樓登山口出發，雖然階梯稍陡，但兩側綠蔭如織，是芬多精最濃郁的私房路徑。最美的拍照點在「仙岩廟」二樓前的觀景平台，能將老榕樹與台北盆地一同框入畫面中！",
+                hours: "下午 4:30 - 下午 6:30（此時登頂剛好能避開午後烈日，一次捕捉『黃金落日』與『信義區都市璀璨夜景』）",
+                transport: "搭乘捷運松山新店線至「景美站」2號出口，直走景中街右轉景興路，步行約8分鐘即可抵達登山口牌樓。",
+                highlight: "尋找呂洞賓足跡巨石、眺望台北101與景美溪蜿蜒身姿、夜賞璀璨盆地繁星。"
+            },
+            {
+                id: 'changshu',
+                title: '樟樹樟湖環狀步道',
+                category: 'hiking',
+                tag: '爬山健行',
+                desc: '貓空極具人氣的休閒步道，沿途鋪設平緩，非常適合全家大小共同出遊。步道隨四季變化種植魯冰花、波斯菊等繽紛花海，還保留了古樸的「穀倉」與茶園造景。',
+                location: '台北市文山區指南路三段 (貓空纜車站旁)',
+                difficulty: '輕鬆 (全長約 2.5 公里，幾乎無陡坡)',
+                icon: 'fa-leaf',
+                badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                image: 'https://images.unsplash.com/photo-1596436889106-be35e843f974?q=80&w=800&auto=format&fit=crop',
+                // Extra Rich Content for Lightbox Modal
+                story: `
+                    <p>這條長約1.5公里的樟樹步道，是貓空地區最具代表性的田園風光小徑。其前身為當地的產業道路，後來經過台北市大地工程處以「農村生活體驗」為核心重新規劃，將古樸的炭窯、茶園、土角厝、牛車完美重現。</p>
+                    <p>這裡最大的特色是驚豔的季節性景觀：每年春季二至三月間，茶樹間會盛開一片極為壯觀的「金黃色魯冰花海」，這也是詩人與民謠中歌頌的浪漫茶肥花。到了五月，白雪般的桐花隨風飄落；秋季則換上粉嫩波斯菊與向日葵交織的彩衣。</p>
+                    <p>步道中段的「彩雲亭」與「明鏡池」水碧天藍，池畔的水車徐徐轉動，經常能見到白鷺鷥在此駐足，展現出一幅恬靜美好的農村水墨畫，讓人忘卻都市的喧囂喧擾。</p>
+                `,
+                hack: "若是體力允許，強烈建議走「樟樹、樟湖環狀線」：樟樹步道平緩親民，適合賞花打卡；而相鄰的樟湖步道則保留了古樸的石板路，沿途有『祈福編鐘』等聲學互動裝置。樟樹進、樟湖出，剛好能體驗動靜皆美的完美環線！",
+                hours: "清晨 7:30 - 上午 10:00（此時山霧尚未完全散去，露水留在魯冰花與茶葉梢上，光線柔和，最適合網美與人像攝影）",
+                transport: "搭乘「貓空纜車」至「貓空站」下車，出站後向左前方步行約5分鐘即可抵達樟樹步道口。",
+                highlight: "春季魯冰花海、旋轉穀倉彩雲亭、明鏡池畔水車景致、百年茶園石階。"
+            },
+            {
+                id: 'fusen',
+                title: '馥森梧桐墅',
+                category: 'food',
+                tag: '不為人知美食',
+                desc: '隱密至極！位於政大老泉街後半段，是由知名渡假集團打造的最新頂級日式無菜單庭園景觀餐廳。獨棟的日式老屋被茂密森林、禪意庭園與梧桐樹環抱，邊用餐邊享受茶道藝術說菜。',
+                location: '台北市文山區老泉街26巷27號',
+                difficulty: '高檔 / 需提前數週預約',
+                icon: 'fa-utensils',
+                badgeColor: 'bg-amber-50 text-amber-700 border-amber-100',
+                image: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop',
+                // Extra Rich Content for Lightbox Modal
+                story: `
+                    <p>隱藏在木柵老泉街半山腰的「馥森梧桐墅」，是奢華渡假品牌「馥蘭朵（Volando）」推出的極致當代美學無菜單餐廳。隱密而低調，獨棟的日式老建築與茂密梧桐、黑松及禪風庭園融為一體，宛若置身日本京都的幽靜隱院。</p>
+                    <p>梧桐墅的核心魅力在於它不單只是一場餐宴，而是一場結合「茶道、香道、當代料理與現場樂器展演」的五感心靈之旅。用餐前，茶師會親自引導賓客體驗茶禮洗塵，沈澱心靈；用餐過程中，主廚將東方茶飲的細緻底蘊融入西方當代法餐中，例如以鐵觀音煙燻食材、將包種茶熬製成高湯等。</p>
+                    <p>隨餐附上的說菜藝術與偶爾傳來的「手碟（Handpan）」或古琴悠揚琴聲，在精緻與大自然間搭建起一座和諧的橋樑，堪稱台北無菜單料理界的頂級隱密天花板。</p>
+                `,
+                hack: "梧桐墅全採「預約制」且極度熱門，一定要提前數週於官方線上系統訂位。主廚每季會更換菜單，強烈推薦春季限定的包種茶香冷湯系列！此外，用餐完後別忘了向服務人員申請參觀頂樓的秘境茶席室，俯瞰山谷風景一流。",
+                hours: "中午 12:00 - 下午 2:30（日光穿透落羽松與梧桐葉灑進日式玻璃屋內，拍照光線最為典雅尊貴）",
+                transport: "本餐廳極為隱密，無直達公車。強烈建議在「捷運萬芳醫院站」或「新店七張站」轉搭計程車上山，車程約15分鐘；或自行開車，餐廳附設專屬預約制車位。",
+                highlight: "東方茶道洗塵茶禮、日式老宅山水禪庭園、當代無菜單法式奢華料理、手碟藝術展演。"
+            },
+            {
+                id: 'xiaokeng',
+                title: '小坑溪文學步道',
+                category: 'hiking',
+                tag: '爬山健行',
+                desc: '政大一街社區旁的親水文學秘境，步道沿著蜿蜒清澈的小坑溪修築。溪水潺潺，沿途布置了許多印有古典文學、現代詩詞造景的水泥石碑與水閘，是個極佳的心靈沉澱之所。',
+                location: '台北市文山區政大一街210巷內',
+                difficulty: '散步級 (步行約 20 分鐘)',
+                icon: 'fa-book-open',
+                badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=800&auto=format&fit=crop',
+                // Extra Rich Content for Lightbox Modal
+                story: `
+                    <p>小坑溪文學步道是一條融合了「親水、自然生態、現代詩歌與古典哲學」的隱密河畔走廊。它靜靜地躺在政大一街與二街、充滿別墅氣息的清幽社區旁，步道旁的水質清澈無比，完全不像是大台北市區內的溪流。</p>
+                    <p>這裡早期曾因泥沙淤積，政府後來採用「近自然工法（Eco-technology）」重新規劃护岸與溪底階梯，不使用硬水泥，而是利用卵石疊築，恢復了溪流的自淨功能。如今溪內隨處可見馬口魚、苦花魚和溪哥悠遊。最動人之處，是沿途錯落排列著木製、石刻的文學詩牌，收錄了席慕蓉、徐志摩、泰戈爾等名家的美麗短詩與自然字句。</p>
+                    <p>聽著汩汩的水聲，踩著平緩防滑的木棧，順道讀上一首關於落葉與山泉的優美現代詩，這裡是洗滌都市疲憊心靈的絕佳安靜綠洲。</p>
+                `,
+                hack: "步道中段設有幾處極安全的「親水階梯平台」，夏日極為涼爽，可以稍微赤腳浸泡清涼乾淨的溪水。由於其緊鄰寧靜的高檔住宅社區，前往造訪與散步時，請務必將音量放低，一起守護這塊土地的靜謐生態。",
+                hours: "上午 8:30 - 上午 11:00（晨光穿過高聳大樹打在涓涓細流與文學碑上，霧氣氤氳，宛若仙境落入凡塵）",
+                transport: "從「捷運動物園站」搭乘公車 棕11、棕21、綠1 至「政大一街站」下車，步行約30公尺即可看到小坑溪文學步道指引標示。",
+                highlight: "自然生態卵石親水步道、閱讀古典文學與雋永詩句石碑、觀賞溪哥與苦花魚群生態。"
+            },
+            {
+                id: 'oldzhang',
+                title: '老張的店・蕃茄牛肉麵',
+                category: 'food',
+                tag: '不為人知美食',
+                desc: '在地人排隊也絕不想公開的小店！其蕃茄牛肉麵採用大量新鮮蕃茄燉煮出濃純酸甜香，牛肉厚實軟嫩。清燉牛肉麵的水準也堪稱一流，湯頭甘醇鮮美，還能免費續一次湯。',
+                location: '台北市文山區景興路118號 (景華公園旁)',
+                difficulty: '平價美食 (排隊熱門)',
+                icon: 'fa-bowl-food',
+                badgeColor: 'bg-amber-50 text-amber-700 border-amber-100',
+                image: 'https://images.unsplash.com/photo-1618040996337-56904b7850b9?q=80&w=800&auto=format&fit=crop',
+                // Extra Rich Content for Lightbox Modal
+                story: `
+                    <p>在景美地區和世新、政大學生的回憶庫裡，「老張的店」代表著無可取代的靈魂溫度。這間樸實的小麵館隱藏在景興路、鄰近景華公園旁。沒有奢華高調的裝潢，唯有一到用餐高峰便大排長龍的忠實食客證明其極致美味。</p>
+                    <p>這家店的王牌「蕃茄牛肉麵」湯頭堪稱台北一流：主廚每天使用數十斤新鮮熟成番茄，與頂級牛大骨、中藥材及洋蔥慢火細燉超過十個小時，番茄纖維早已完全燉化融入湯頭中。每一口湯都帶著鮮明飽滿的番茄果香與微酸微甜的牛肉油脂香氣，絲滑醇厚、回甘無比。</p>
+                    <p>牛肉切得非常大氣，厚實帶筋，燉煮得極其軟爛，入口即化卻不散不柴。這是一碗真正注入匠人精神的極限平民好麵。</p>
+                `,
+                hack: "點麵時，一定要指名選擇「手工寬拉麵（家常麵）」，其驚人的Q彈勁道與吸附番茄原汁的能力完美契合。此外，店內最佛心的是「點餐可以免費續番茄湯一次」，湯頭太好喝，每桌賓客幾乎都會喝到碗底朝天！",
+                hours: "下午 5:15 - 下午 6:00（晚上營業時間剛開始，可以完美避開晚餐第一波大排長龍的街坊人潮）",
+                transport: "搭乘捷運松山新店線至「景美站」2號出口，直走景中街右轉景興路，步行約5分鐘即可到達（店前為景華公園）。",
+                highlight: "濃純熟成番茄牛肉麵（免費續湯一次）、清燉極致牛骨拉麵、招牌滷花干與手工小菜。"
+            },
+            {
+                id: 'wenshancoffee',
+                title: '聞山咖啡 景美店',
+                category: 'scenic',
+                tag: '文青與拍照',
+                desc: '擁有四十多年歷史的傳奇不限時老咖啡館，古典典雅、燈光微黃，充滿文學與老木香。據說它就是台灣知名小說《傷心咖啡店之歌》當中的實體咖啡店原型，文青必訪。',
+                location: '台北市文山區景中街19號',
+                difficulty: '人文幽靜 / 手沖咖啡與甜點推薦',
+                icon: 'fa-mug-hot',
+                badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+                image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=800&auto=format&fit=crop',
+                // Extra Rich Content for Lightbox Modal
+                story: `
+                    <p>創立於1983年的「聞山咖啡景美店」，是台北獨立精品咖啡界的活化石。當時台北尚未興起星巴克或無數的現代網美店，聞山就已固執地以專業手沖和濃厚的老木頭裝潢，溫暖著文山區的無數靈魂。</p>
+                    <p>走進店內，黃銅製的手沖壺、典雅的黃色古典吊燈以及滿架的書籍與海報，讓時光在此彷彿倒流回了80年代。據說台灣經典文學小說《傷心咖啡店之歌》筆下，那家交織著煙霧、思辨、自由與淡淡落寞靈魂的咖啡店，其實體原型便是聞山咖啡。</p>
+                    <p>這裡不只是喝杯咖啡，更是在老鋪木桌椅上，嗅著豆香、點亮一盞老檯燈、在古典樂的包圍下，享受一場與自己心靈的無聲深度對話。</p>
+                `,
+                hack: "千萬別錯過聞山的招牌自家烘焙「經典綜合配方豆（手沖）」，味道厚實，帶有深焙巧克力的煙燻香甜。另外，他們的「焦糖手作老派布丁」與「比利時重乳酪起司蛋糕」水準極高，常在下午三點前就被一掃而空！",
+                hours: "下午 1:30 - 下午 4:30（這段時間最能享受老店古典的幽靜，也是日光從窗外斜射進老木地板、拍照最唯美的黃金光影）",
+                transport: "捷運松山新店線「景美站」1號出口出站，沿景中街直走約2分鐘，就在著名地標景美國中正對面。",
+                highlight: "體驗40年黃銅手沖精品綜合配方豆、品嚐老派手作焦糖布丁、沈浸於不限時的復古老木文學氛圍。"
+            },
+            {
+                id: 'shanzhong',
+                title: '山中客廳',
+                category: 'scenic',
+                tag: '文青與拍照',
+                desc: '隱藏在萬隆巷弄內的超低調預約制咖啡秘境。雖然從原先的深山搬到了市區，但依舊極力維持木屋綠植、安靜致遠的恬淡氛圍，店裡還有親人的店狗麗華與韭菜陪伴，溫暖治癒。',
+                location: '台北市文山區羅斯福路五段218巷 (預約制)',
+                difficulty: '慢活咖啡館 (需透過官方社群預約)',
+                icon: 'fa-paw',
+                badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+                image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800&auto=format&fit=crop',
+                // Extra Rich Content for Lightbox Modal
+                story: `
+                    <p>原先隱匿在平林深山、以廢墟美學震驚台北文青界的極密景點「山中客廳」，在近年低調搬遷至萬隆捷運站深處的古老紅磚小巷中。雖然回到了熱鬧的都市，但女主人極具魔法地將山裡的恬靜、緩慢節奏與山林客廳的溫暖靈魂百分之百移植了過來。</p>
+                    <p>店內充斥著手作陶器、編織毯、乾燥花以及精心復刻的厚木桌椅。這裡沒有任何催促的步伐，有的只是空氣中飄散的手工手沖香氣與店內親人無比的黃金獵犬「麗華」與臘腸犬「韭菜」。牠們最愛安靜地趴在旅人的腳邊，陪伴你看完一整本書。</p>
+                    <p>這是一個真正落實「到朋友家客廳放鬆做客」的療癒空間，每一杯咖啡、每一款手作蛋糕，都注入了令人心頭一暖的手作溫度。</p>
+                `,
+                hack: "萬隆新店依舊遵循「全預約制」來確保每位訪客的禪意體驗與極限舒適，謝絕不預約的臨時遊客與過多拍照喧嘩的客人。一定要提前一至兩週至店家的 Instagram 或官方社群預定席次！",
+                hours: "週六或週日下午 2:00 - 下午 4:30（剛好是日光最燦爛柔和的沐浴時間，店狗也在此時最為慵懶可愛）",
+                transport: "搭乘捷運至松山新店線「萬隆站」4號出口，沿羅斯福路五段靜巷步行約5分鐘，按預約訊息的地址尋找老紅磚小門。",
+                highlight: "每日手沖手捻精品咖啡、季節手作法式蘋果派、與店狗麗華、韭菜享受溫柔治癒的午後慢時光。"
+            },
+            {
+                id: 'mintpasta',
+                title: 'MINT PASTA 綠薄荷麵食坊',
+                category: 'food',
+                tag: '不為人知美食',
+                desc: '景美捷運站附近巷弄的二十年排隊傳奇！以便宜到不可思議的平民價格，提供超高水準、奶香濃郁且份量巨大的義大利麵與粉紅醬起司通心粉，深受世新、政大學生熱愛。',
+                location: '台北市文山區景興路274-2號',
+                difficulty: '銅板高CP值 (午晚餐尖峰需排隊)',
+                icon: 'fa-cheese',
+                badgeColor: 'bg-amber-50 text-amber-700 border-amber-100',
+                image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=800&auto=format&fit=crop',
+                // Extra Rich Content for Lightbox Modal
+                story: `
+                    <p>對於任何一個在景美生活過的人，「MINT PASTA（綠薄荷）」不僅僅是一家義大利麵館，更是代表著青春歲月、胃袋大滿足的終極平民聖殿。這家傳奇小店在景美小巷默默矗立了超過二十個年頭，始終以親民無比的銅板價格，端出香氣、濃郁度堪比高級餐廳的極高水準義大利麵。</p>
+                    <p>這裡的經典首選絕對是「粉紅醬起司雞肉麵」。粉紅醬（Pink Sauce）是主廚將酸甜的新鮮番茄紅醬與香濃細滑的白松露奶油白醬進行完美黃金比例調和，再撒上超有誠意的牽絲莫札瑞拉起司，通心粉或麵條裹上微稠而層次豐富的醬汁，入口瞬間奶香與酸甜激盪，雞肉極度軟嫩，吃一次就淪陷。</p>
+                    <p>不論是裝潢或出餐效率都非常高，是一家真正將實惠與頂級滋味做到極致的台式義麵傳奇。</p>
+                `,
+                hack: "除了粉紅醬，熟客才知道的「隱藏吃法」是加點他們的『酥皮蛤蜊濃湯』：熱烘烘、宛如氣球蓬鬆的酥皮烤得極其焦香，壓入滿滿肥美蛤蜊的鮮甜濃湯中，絕對是滿足感破表的最佳配角！",
+                hours: "下午 2:00 - 下午 4:30（完美避開中午12點世新與政大師生、以及晚餐下班族的排隊狂潮，用餐環境最寬敞悠閒）",
+                transport: "捷運松山新店線「景美站」2號出口出站，向左走景中街遇景興路右轉，在愛買對面的小巷子內，步行約5分鐘即可到達。",
+                highlight: "傳奇粉紅醬起司雞肉麵、極香酥皮蛤蜊海鮮濃湯、手工南瓜起司雞肉筆管麵。"
+            },
+            {
+                id: 'zhengdashuipen',
+                title: '政大水盆羊肉',
+                category: 'food',
+                tag: '不為人知美食',
+                desc: '隱藏在政大商圈巷弄的西北豪邁美味。熱騰騰的手工羊肉湯澄澈甘甜，加入冬粉與香菜去腥。搭配現烤蓬鬆帶嚼勁的「月牙餅」，可以把羊肉夾進餅裡，體驗正宗陜西吃法！',
+                location: '台北市文山區指南路二段附近巷弄',
+                difficulty: '大眾平價 / 冬日滋補首選',
+                icon: 'fa-fire-alt',
+                badgeColor: 'bg-amber-50 text-amber-700 border-amber-100',
+                image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop',
+                // Extra Rich Content for Lightbox Modal
+                story: `
+                    <p>「政大水盆羊肉」是隱藏在政大山腳下、極具西北邊疆風情的豪邁寶藏美食。在全台北市，要找到如此正宗的陜西關中平原「水盆羊肉」，此處絕對是老饕心目中的頭號口袋名單。</p>
+                    <p>這裡的招牌羊肉湯採用精選鮮嫩帶皮羊肉、老母雞與當歸、黨參、桂皮等三十多種中藥材慢火熬製一天。呈現出的湯頭清亮如水、金黃澄澈，卻沒有半點令人卻步的羊羶味，反而甘醇、溫潤無比。湯頭裡夾帶滑溜的冬粉，溫補滋補首選。</p>
+                    <p>最經典的靈魂吃法是搭配手工揉製、現烤出爐的「月牙餅（饃）」。餅身外焦裡蓬，嚼勁十足，小麥香氣噴鼻。一口香氣洋溢的脆饃、一口甘美羊湯，是冬日溫暖身心的不二法門。</p>
+                `,
+                hack: "正宗吃法是「一饃兩吃」：先將月牙餅攔腰撕開，將大塊香嫩的羊肉、青蔥與店家特製香麻的「油潑辣子」一股腦塞入餅中，製成自製的陝西羊肉夾饃；剩下的一半月牙餅，則可以掰成碎塊泡入滾燙的羊肉湯中，吸飽肉汁精華，口感層次極佳！",
+                hours: "中午 11:30 或傍晚 5:00（手工現烤月牙餅每天定時出爐，一出爐就買，剛好能體驗最為鬆軟焦香的酥脆外皮）",
+                transport: "搭乘公車 236、綠1、棕6 等至「政治大學站」下車，沿指南路二段往麥當勞方向前行，轉進巷內步行約30公尺即可看到小紅招牌。",
+                highlight: "陜西正宗水盆羊肉（附現烤月牙餅）、陝西經典肉夾饃、酸辣過癮的油潑辣子粉條湯。"
+            }
+        ];
+
+        const quizData = [
+            {
+                question: '文山區在早期開墾時代，因為周邊山巒起伏、地形外觀看起來很像什麼，所以舊名被稱為「拳山」？',
+                options: ['老虎的牙齒', '巨人的拳頭', '倒扣的茶杯', '展翅的飛鷹'],
+                answer: 1, // '巨人的拳頭'
+                explain: '正確答案！文山區舊稱「拳山」，因當時開墾者發現該地山脈環繞，外觀看起來就像緊握的拳頭而得名，直到日治與光復後才改雅稱為「文山」。'
+            },
+            {
+                question: '傳說中「仙跡岩」山頂有一塊刻有腳印的奇特巨石。據說這個腳印是八仙中的哪位神明留下來的？',
+                options: ['鐵拐李', '張果老', '呂洞賓', '何仙姑'],
+                answer: 2, // '呂洞賓'
+                explain: '沒錯！相傳八仙之一的呂洞賓在追求何仙姑時，被一腳踢下凡間，降落時一腳踩在景美的仙跡岩，另一腳踩在三峽，因而在巨石上留下了深邃的足跡。'
+            },
+            {
+                question: '若想在貓空地區體驗在地茶葉美食，當地最著名的特產茶種（常用於做鐵觀音霜淇淋與茶餐）是什麼？',
+                options: ['凍頂烏龍茶', '木柵鐵觀音', '東方美人茶', '文山包種茶'],
+                answer: 1, // '木柵鐵觀音'
+                explain: '完全正確！木柵是台灣最具代表性的「鐵觀音」產區。當地的土壤與氣候極適合鐵觀音茶樹生長，其獨特的喉韻與煙燻香氣，做成茶香霜淇淋與茶餐非常美味！'
+            },
+            {
+                question: '下列哪一間開在景美捷運站附近的咖啡館，歷史已超過40年，據說是知名小說《傷心咖啡店之歌》的原型？',
+                options: ['聞山咖啡', '秘徑咖啡', '山中客廳', '無名氏咖啡'],
+                answer: 0, // '聞山咖啡'
+                explain: '答對了！「聞山咖啡景美店」自1980年代起就矗立於景美，擁有極為悠久的歷史與文學氣息，正是作家朱少麟筆下經典作品的原型靈感來源。'
+            }
+        ];
+
+        // ----------------- Global App State -----------------
+        let userItinerary = [];
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        // ----------------- Init Function -----------------
+        window.addEventListener('DOMContentLoaded', () => {
+            renderExploreCards('all');
+            initMobileMenu();
+            initQuiz();
+            loadItineraryFromLocalStorage();
+        });
+
+        // ----------------- Alert/Toast Helper -----------------
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('custom-toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.textContent = message;
+            if (type === 'success') {
+                toastIcon.innerHTML = `<i class="fas fa-check-circle text-xl text-emerald-400"></i>`;
+            } else {
+                toastIcon.innerHTML = `<i class="fas fa-exclamation-circle text-xl text-amber-400"></i>`;
+            }
+
+            // Slide in
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            // Slide out
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        }
+
+        // ----------------- Nav Responsive Bar -----------------
+        function initMobileMenu() {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            
+            btn.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
+
+            // Close when link clicked
+            const links = menu.querySelectorAll('a');
+            links.forEach(l => {
+                l.addEventListener('click', () => {
+                    menu.classList.add('hidden');
+                });
+            });
+        }
+
+        // ----------------- STREAMING_CHUNK: Setting up Detail Lightbox Modal Handlers... -----------------
+        // ----------------- Detail Lightbox Modal Handlers -----------------
+        function openDetailModal(id) {
+            const item = exploreData.find(x => x.id === id);
+            if (!item) return;
+
+            // Populate text content
+            document.getElementById('modal-img').src = item.image;
+            document.getElementById('modal-img').alt = item.title;
+            document.getElementById('modal-tag').innerHTML = `<i class="fas ${item.icon} mr-1.5"></i>${item.tag}`;
+            document.getElementById('modal-title').textContent = item.title;
+            document.getElementById('modal-story').innerHTML = item.story;
+            document.getElementById('modal-hack').textContent = item.hack;
+            document.getElementById('modal-hours').textContent = item.hours;
+            document.getElementById('modal-transport').textContent = item.transport;
+            document.getElementById('modal-highlight').textContent = item.highlight;
+            document.getElementById('modal-location').textContent = item.location;
+
+            // Update action button inside modal
+            updateModalActionButton(id);
+
+            // Display modal with animation
+            const modal = document.getElementById('detail-modal');
+            const container = document.getElementById('modal-container');
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            container.classList.remove('scale-95');
+            container.classList.add('scale-100');
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detail-modal');
+            const container = document.getElementById('modal-container');
+            
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+        }
+
+        // Close modal when clicking outside the modal content container
+        document.getElementById('detail-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('detail-modal')) {
+                closeDetailModal();
+            }
+        });
+
+        function updateModalActionButton(id) {
+            const isAdded = userItinerary.some(i => i.id === id);
+            const btn = document.getElementById('modal-action-btn');
+            
+            if (isAdded) {
+                btn.className = "w-full sm:w-auto py-3 px-6 rounded-xl text-sm font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-all flex items-center justify-center space-x-2";
+                btn.innerHTML = `<i class="fas fa-check"></i> <span>已在行程表 (點擊移除)</span>`;
+                btn.onclick = () => {
+                    removeFromItinerary(id);
+                    updateModalActionButton(id); // refresh modal btn
+                };
+            } else {
+                btn.className = "w-full sm:w-auto py-3 px-6 rounded-xl text-sm font-bold bg-forest-900 hover:bg-forest-800 text-white shadow-md transition-all flex items-center justify-center space-x-2";
+                btn.innerHTML = `<i class="fas fa-plus"></i> <span>加入我的行程表</span>`;
+                btn.onclick = () => {
+                    addToItinerary(id);
+                    updateModalActionButton(id); // refresh modal btn
+                };
+            }
+        }
+
+        // ----------------- STREAMING_CHUNK: Coding card renders with Lightbox triggers... -----------------
+        // ----------------- Explore Cards Renderer -----------------
+        function renderExploreCards(filter = 'all') {
+            const container = document.getElementById('explore-grid');
+            container.innerHTML = '';
+
+            const filteredData = filter === 'all' 
+                ? exploreData 
+                : exploreData.filter(item => item.category === filter);
+
+            filteredData.forEach(item => {
+                const isAdded = userItinerary.some(i => i.id === item.id);
+                
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl border border-stone-200/80 transition-all duration-300 flex flex-col group h-full";
+                
+                card.innerHTML = `
+                    <div class="relative h-52 overflow-hidden bg-stone-100 cursor-pointer" onclick="openDetailModal('${item.id}')">
+                        <!-- Fallback & Image -->
+                        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                             src="${item.image}" 
+                             alt="${item.title}"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=800&auto=format&fit=crop';">
+                        <div class="absolute top-4 left-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${item.badgeColor} border backdrop-blur-sm">
+                                <i class="fas ${item.icon} mr-1.5"></i>${item.tag}
+                            </span>
+                        </div>
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span class="bg-white/90 text-stone-900 text-xs font-bold py-2 px-4 rounded-full shadow-lg flex items-center gap-1">
+                                <i class="fas fa-search-plus text-tea-600"></i> 點選查看詳細介紹
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-forest-900 mb-2 group-hover:text-tea-600 transition-colors cursor-pointer" onclick="openDetailModal('${item.id}')">${item.title}</h3>
+                            <p class="text-stone-500 text-xs mb-4 flex items-start gap-1">
+                                <i class="fas fa-map-marker-alt text-tea-500 mt-0.5"></i>
+                                <span>${item.location}</span>
+                            </p>
+                            <p class="text-stone-600 text-sm leading-relaxed mb-6 line-clamp-3">${item.desc}</p>
+                        </div>
+                        
+                        <div class="border-t border-stone-100 pt-4 mt-auto">
+                            <div class="flex justify-between items-center mb-4 text-xs text-stone-500">
+                                <span><i class="fas fa-route mr-1 text-stone-400"></i>等級: ${item.difficulty}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="openDetailModal('${item.id}')" 
+                                        class="py-2.5 px-2 rounded-xl text-xs font-bold border border-stone-200 bg-white hover:bg-stone-50 text-stone-600 transition-all flex items-center justify-center space-x-1">
+                                    <i class="fas fa-book-open text-tea-500"></i>
+                                    <span>詳細背景</span>
+                                </button>
+                                <button onclick="addToItinerary('${item.id}')" 
+                                        class="py-2.5 px-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-center space-x-1 ${
+                                            isAdded 
+                                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                            : 'bg-forest-900 hover:bg-forest-800 border-forest-900 text-white'
+                                        }">
+                                    <i class="fas ${isAdded ? 'fa-check' : 'fa-plus'}"></i>
+                                    <span>${isAdded ? '已在行程' : '加入行程'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterExplore(category) {
+            // Update button styles
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                btn.className = "filter-btn px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 bg-stone-100 text-stone-600 hover:bg-stone-200";
+            });
+
+            const activeBtn = document.getElementById(`btn-${category}`);
+            if (activeBtn) {
+                activeBtn.className = "filter-btn px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 bg-forest-900 text-white shadow-md shadow-forest-900/10";
+            }
+
+            renderExploreCards(category);
+        }
+
+        // ----------------- STREAMING_CHUNK: Implementing Itinerary state logic... -----------------
+        // ----------------- Itinerary Planner Logic -----------------
+        function addToItinerary(id) {
+            const item = exploreData.find(x => x.id === id);
+            if (!item) return;
+
+            if (userItinerary.some(x => x.id === id)) {
+                showToast(`「${item.title}」已經在您的行程中囉！`, 'info');
+                return;
+            }
+
+            userItinerary.push(item);
+            saveItineraryToLocalStorage();
+            updateItineraryUI();
+            renderExploreCards('all'); // Refresh buttons state
+            showToast(`成功將「${item.title}」加入您的自訂行程！`);
+        }
+
+        function removeFromItinerary(id) {
+            userItinerary = userItinerary.filter(x => x.id !== id);
+            saveItineraryToLocalStorage();
+            updateItineraryUI();
+            renderExploreCards('all'); // Refresh buttons state
+            showToast('已從行程表中移除項目。', 'info');
+        }
+
+        function clearItinerary() {
+            if (userItinerary.length === 0) return;
+            userItinerary = [];
+            saveItineraryToLocalStorage();
+            updateItineraryUI();
+            renderExploreCards('all');
+            showToast('行程表已成功清空！', 'info');
+        }
+
+        function updateItineraryUI() {
+            const container = document.getElementById('itinerary-list');
+            const placeholder = document.getElementById('itinerary-placeholder');
+
+            // Clear everything except static elements if any
+            container.innerHTML = '';
+
+            if (userItinerary.length === 0) {
+                container.appendChild(placeholder);
+                return;
+            }
+
+            userItinerary.forEach((item, index) => {
+                const itemEl = document.createElement('div');
+                itemEl.className = "bg-white p-4 rounded-xl border border-stone-200 shadow-sm flex items-center justify-between gap-4 transition-all hover:border-tea-500";
+                itemEl.innerHTML = `
+                    <div class="flex items-center space-x-3 flex-1 min-w-0">
+                        <div class="bg-forest-100 text-forest-900 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                            ${index + 1}
+                        </div>
+                        <div class="truncate">
+                            <h4 class="font-bold text-stone-800 text-sm truncate cursor-pointer hover:text-tea-600 transition-colors" onclick="openDetailModal('${item.id}')">${item.title}</h4>
+                            <p class="text-xs text-stone-400 truncate"><i class="fas fa-map-marker-alt mr-1"></i>${item.location}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <!-- Up Button -->
+                        <button onclick="moveItineraryItem(${index}, -1)" class="p-1.5 text-stone-400 hover:text-stone-600 focus:outline-none" aria-label="上移">
+                            <i class="fas fa-chevron-up"></i>
+                        </button>
+                        <!-- Down Button -->
+                        <button onclick="moveItineraryItem(${index}, 1)" class="p-1.5 text-stone-400 hover:text-stone-600 focus:outline-none" aria-label="下移">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <!-- Delete Button -->
+                        <button onclick="removeFromItinerary('${item.id}')" class="p-1.5 text-red-400 hover:text-red-600 focus:outline-none" aria-label="刪除">
+                            <i class="fas fa-times-circle text-lg"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(itemEl);
+            });
+        }
+
+        function moveItineraryItem(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= userItinerary.length) return;
+            
+            // Swap items
+            const temp = userItinerary[index];
+            userItinerary[index] = userItinerary[targetIndex];
+            userItinerary[targetIndex] = temp;
+
+            saveItineraryToLocalStorage();
+            updateItineraryUI();
+        }
+
+        function loadPreset(presetName) {
+            userItinerary = [];
+            if (presetName === 'tea') {
+                const items = ['changshu', 'oldzhang', 'fusen'];
+                items.forEach(id => {
+                    const found = exploreData.find(x => x.id === id);
+                    if (found) userItinerary.push(found);
+                });
+                showToast('已載入「一日茶香與避暑芬多精之旅」行程範本！');
+            } else if (presetName === 'history') {
+                const items = ['xianjiyan', 'wenshancoffee', 'mintpasta'];
+                items.forEach(id => {
+                    const found = exploreData.find(x => x.id === id);
+                    if (found) userItinerary.push(found);
+                });
+                showToast('已載入「文青慢活與夕陽小鎮巡禮」行程範本！');
+            }
+            saveItineraryToLocalStorage();
+            updateItineraryUI();
+            renderExploreCards('all');
+        }
+
+        // --- Clipboard Safe Handler ---
+        function copyItinerary() {
+            if (userItinerary.length === 0) {
+                showToast('您的行程表是空的，無法複製！', 'error');
+                return;
+            }
+
+            let textToCopy = "【文山之美 - 我的自訂探險行程】\n\n";
+            userItinerary.forEach((item, index) => {
+                textToCopy += `${index + 1}. ${item.title}\n   📍 地址: ${item.location}\n   💡 簡介: ${item.desc}\n\n`;
+            });
+            textToCopy += "※ 探索文山深度美，建立專屬地圖：https://github.com/ (或您的部署網址)";
+
+            // Create temporary textarea for copying (Safe fallback for non-secure iframe and HTTP compatibility)
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            textArea.style.position = "fixed";  // Avoid scrolling to bottom
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('行程內容已成功複製到剪貼簿！');
+                } else {
+                    showToast('複製失敗，請手動選取文字複製。', 'error');
+                }
+            } catch (err) {
+                showToast('瀏覽器不支援一鍵複製，請手動複製。', 'error');
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function shareItinerary() {
+            if (userItinerary.length === 0) {
+                showToast('請先加入一些景點再分享吧！', 'error');
+                return;
+            }
+            showToast('已產生行程分享連結！您可以使用複製的內容發送給LINE好友或Facebook。');
+            copyItinerary();
+        }
+
+        // --- Local Storage Management ---
+        function saveItineraryToLocalStorage() {
+            localStorage.setItem('wenshan_itinerary', JSON.stringify(userItinerary.map(i => i.id)));
+        }
+
+        function loadItineraryFromLocalStorage() {
+            try {
+                const savedIds = localStorage.getItem('wenshan_itinerary');
+                if (savedIds) {
+                    const ids = JSON.parse(savedIds);
+                    userItinerary = [];
+                    ids.forEach(id => {
+                        const found = exploreData.find(x => x.id === id);
+                        if (found) userItinerary.push(found);
+                    });
+                    updateItineraryUI();
+                }
+            } catch (e) {
+                console.error("無法載入本地儲存的行程", e);
+            }
+        }
+
+        // ----------------- Trivia Quiz Game Logic -----------------
+        function initQuiz() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            quizAnswered = false;
+            
+            document.getElementById('quiz-game-box').classList.remove('hidden');
+            document.getElementById('quiz-result-box').classList.add('hidden');
+            
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            quizAnswered = false;
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+            
+            const q = quizData[currentQuizIndex];
+            
+            // Set progress
+            document.getElementById('quiz-progress').textContent = `問題 ${currentQuizIndex + 1} / ${quizData.length}`;
+            document.getElementById('quiz-score').textContent = `得分：${quizScore}`;
+            
+            // Set Question Text
+            document.getElementById('quiz-question').textContent = q.question;
+
+            // Generate Options
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition-all flex justify-between items-center group font-medium text-stone-100";
+                btn.innerHTML = `
+                    <span>${opt}</span>
+                    <span class="w-6 h-6 rounded-full border border-white/30 flex items-center justify-center group-hover:border-white text-xs font-bold uppercase select-none">
+                        ${String.fromCharCode(65 + idx)}
+                    </span>
+                `;
+                btn.onclick = () => selectOption(idx, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex, btnElement) {
+            if (quizAnswered) return; // Prevent double answer
+            quizAnswered = true;
+
+            const q = quizData[currentQuizIndex];
+            const optionsContainer = document.getElementById('quiz-options');
+            const buttons = optionsContainer.querySelectorAll('button');
+
+            // Disable all buttons and show colors
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                const letterBadge = btn.querySelector('span:last-child');
+                
+                if (idx === q.answer) {
+                    // Correct answer highlights green
+                    btn.className = "w-full text-left p-4 rounded-xl bg-emerald-600/35 border-2 border-emerald-500 transition-all flex justify-between items-center font-bold text-white";
+                    letterBadge.className = "w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs";
+                    letterBadge.innerHTML = `<i class="fas fa-check"></i>`;
+                } else if (idx === selectedIndex) {
+                    // Selected wrong answer highlights red
+                    btn.className = "w-full text-left p-4 rounded-xl bg-red-600/35 border-2 border-red-500 transition-all flex justify-between items-center font-bold text-stone-200";
+                    letterBadge.className = "w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs";
+                    letterBadge.innerHTML = `<i class="fas fa-times"></i>`;
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-xl bg-white/5 border border-white/10 opacity-40 transition-all flex justify-between items-center text-stone-400";
+                }
+            });
+
+            // Update Score
+            if (selectedIndex === q.answer) {
+                quizScore += 25;
+                document.getElementById('quiz-score').textContent = `得分：${quizScore}`;
+            }
+
+            // Show explanation block below option
+            const explainDiv = document.createElement('div');
+            explainDiv.className = "mt-6 p-4 rounded-xl bg-stone-800/80 border border-stone-700 text-stone-300 text-sm leading-relaxed";
+            explainDiv.innerHTML = `
+                <p class="font-bold mb-1 text-tea-500">📝 解析說明：</p>
+                <p>${q.explain}</p>
+            `;
+            optionsContainer.appendChild(explainDiv);
+
+            // Show next button
+            document.getElementById('quiz-next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuizIndex++;
+            if (currentQuizIndex < quizData.length) {
+                loadQuizQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-game-box').classList.add('hidden');
+            document.getElementById('quiz-result-box').classList.remove('hidden');
+
+            const title = document.getElementById('quiz-result-title');
+            const desc = document.getElementById('quiz-result-desc');
+            const icon = document.getElementById('quiz-result-icon');
+
+            if (quizScore === 100) {
+                icon.innerHTML = `<i class="fas fa-crown text-amber-400 animate-bounce"></i>`;
+                title.textContent = "文山區至尊小達人！";
+                desc.textContent = "滿分！您對文山區的歷史文化與秘境景點瞭若指掌，簡真是活生生的文山導覽百科！";
+            } else if (quizScore >= 50) {
+                icon.innerHTML = `<i class="fas fa-medal text-teal-400"></i>`;
+                title.textContent = "文山深度探索者";
+                desc.textContent = `恭喜您獲得 ${quizScore} 分！您對文山區有很不錯的瞭解，下次帶朋友去爬山當嚮導絕對沒問題！`;
+            } else {
+                icon.innerHTML = `<i class="fas fa-compass text-stone-400"></i>`;
+                title.textContent = "文山新手旅人";
+                desc.textContent = `獲得了 ${quizScore} 分。不要氣餒！文山還有許多美麗的故事與景點等著您實地踩點！`;
+            }
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+    </script>
+</body>
+</html>
